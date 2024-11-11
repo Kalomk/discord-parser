@@ -46,6 +46,11 @@ const catchMessagesFromDiscord = (token) => {
         let author = d.author.username;
         let content = d.content;
         let channel_id = d.channel_id;
+        let attachments;
+
+        if(d.attachments.length > 0){
+          attachments = d.attachments
+        }
 
         if (chatObj[channel_id] === undefined) {
           return;
@@ -53,13 +58,14 @@ const catchMessagesFromDiscord = (token) => {
 
         // Remove any part of content that starts with < and ends with >
         content = content.replace(/<[^>]*>/g, '');
-
+console.log(d)
         // Send the message data to the specified route
         try {
           await axios.post(`${process.env.ROUTE}/sendToGroup`, {
-            channel: chatObj[channel_id],
+            channel: chatObj[channel_id] || '',
             author,
-            content
+            content,
+            attachments: attachments || []
           });
           console.log(`Message sent to tg-group: [${chatObj[channel_id]}] - ${author} : ${content}`);
         } catch (error) {
